@@ -1,0 +1,33 @@
+---Valodator-Address---
+export VALIDATOR_TC_NETWORK=evmosvaloper1yw3uzauqx3lywnttftjr728e3j6e9ptfk7h406
+export VALIDATOR_Disperze=evmosvaloper1sp9frqwep52chwavv3xd776myy8gyyvkv5uysl
+export TEST_MULTISIG_ADDR=evmos1j2pjz7tkrpz6rugafc2wyeh9u6g0njv4t93cur
+
+---DELEGATE---
+export AMOUNT=1evmos
+export WALLET=$TEST_MULTISIG_ADDR
+./evmosd tx staking delegate $VALIDATOR_TC_NETWORK $AMOUNT --from $WALLET --gas=350000 --fees=7000000000000000aevmos --chain-id=evmos_9001-2 --generate-only > unsignedTx.json
+
+---GET REWARD—
+#./evmosd tx distribution withdraw-all-rewards --from evmos1djsq4sderfsmnf00qzj8pdc3z2qew06k5qhv8x --gas=350000 --fees=7000000000000000aevmos --chain-id=evmos_9001-2 --generate-only --node https://rpc-evmos-ia.cosmosia.notional.ventures:443/
+
+#rm -if unsignedTxGetRewardStakeMultisig.json
+#signed_json=''
+#echo $signed_json > unsignedTxGetRewardStakeMultisig.json
+
+rm -if unsignedTx.json
+cp unsignedTxGetRewardStakeMultisig.json unsignedTx.json
+
+---SET-WITHDRAW_ADDR---
+./evmosd tx distribution set-withdraw-addr evmos18usyyqjzlrmap8r0pgs5w2flqzseaudyaq43eq --from evmos1djsq4sderfsmnf00qzj8pdc3z2qew06k5qhv8x --gas=350000 --fees=7000000000000000aevmos --chain-id=evmos_9001-2 --generate-only --node https://rpc-evmos-ia.cosmosia.notional.ventures:443/
+
+---UNDBONDING---
+export AMOUNT=1evmos
+export WALLET=$TEST_MULTISIG_ADDR
+./evmosd tx staking unbond $VALIDATOR_TC_NETWORK $AMOUNT --from $WALLET --gas=350000 --fees=7000000000000000aevmos --chain-id=evmos_9001-2 --generate-only > unsignedTx.json
+
+---BROADCAST---
+rm -if signedTx.json
+signed_json=''
+echo $signed_json > signedTx.json
+./evmosd tx broadcast signedTx.json --chain-id=evmos_9001-2 --broadcast-mode=block --node https://rpc-evmos-ia.cosmosia.notional.ventures:443/

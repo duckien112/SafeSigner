@@ -1,0 +1,26 @@
+---RESTORE KEYS---
+./evmosd keys add sign1 --recover
+gAAAAABjWkP62Lu9H_z3PMk9o9jjA9OFSr81jX9A5fsmMftaFmxrE3ncL4pZ2wIPxACECYDWvNUDTSE6Pyg_eoHyQAfI-6BU6fgL4pp7lK1feUi_kxbrhjFx0NW14kmwPFapGput6d-Pk5HJ7zq_D8x8GfBrbZ87wVoAEsK7QYytYsMfLVDEdu6pM_6QAn2pWxAlOnnx4tbdO-vD7zLIOHsonOsHE_xexa2YY9r74O7urJRXUlXca9EBmZw4YTT_RKezUc7-v_hXlPVNUb6HMK46CMsyui9Fkg==
+
+./evmosd keys add sign2 --recover
+gAAAAABjWkUTJ16uqriGgotuHlse9DW9TPPKQIv2DVEaNGFXZDykzc_MI9G_ueFNMtT-o5y7NpX87eSuoCO-pq7s_Bk2ZmOaIRlCcGdsc3gVqfjcGbAt3KaHxk_Z1Ti2WuTShZQYpMr0us3NgmOAWDYPRYDOWOfzpsqAhmw1e3OtepddS0i8hJRzw3WaRe1mjjWTLscvZqin1ygLkCDRCVkVc0uSHunzgwsoocZ7hLHG99puGpT-FRLHrbtX8hiulnQsGJSBXH1ciA9PXomVyYIIGqCRe9jjBQ==
+
+./evmosd keys add sign3 --recover
+gAAAAABjWkWDSu01k8jYhmIKl_qfkCJH8_kElXfdnkB4QVAGT8Bfxq1EJjpN8D76pzVjjuBU1jyCnRCJqCD6kqAOtMkX7TLVW6JbRlJ6-CgX6Hd6JY_mOWvCkeECD66ljmOp8R9oDppEPebEUuZFIPyywZEc6smvIozSHHG72Ay4cNnHJdqyGEPX8W4gfp6A6pzo5x0r9akYCqLpHlXmXZqwZblniw2N93WuUA2WRLwbBRBA2poV2Z85pfiIpGgq4nGBJnA3SO-sqzpuRhdihLZOHxQze7BLLw==
+
+./evmosd keys add stake_multisig --multisig=sign1,sign2,sign3 --multisig-threshold=3
+
+sign1: evmos1efr4vpvtgu6jn20czffgnlz9anp26unx4g3c52
+sign2: evmos109wz0lr5320wxaqa49acdakz3av5mysfqkwfuy
+sign3: evmos1et9sfqa3uyawkvnza2ecjnmdt34rh2skmaen9v
+stake_multisig: evmos1djsq4sderfsmnf00qzj8pdc3z2qew06k5qhv8x
+
+---SIGN---
+export SEQ=18
+export ACC_NUM=2149466
+export STAKE_MULTISIG_ADDR=evmos1djsq4sderfsmnf00qzj8pdc3z2qew06k5qhv8x
+./evmosd tx sign unsignedTx.json --multisig=$STAKE_MULTISIG_ADDR --from=sign1 --output-document=sign1sig.json --chain-id=evmos_9001-2 --offline --account-number $ACC_NUM --sequence $SEQ
+./evmosd tx sign unsignedTx.json --multisig=$STAKE_MULTISIG_ADDR --from=sign2 --output-document=sign2sig.json --chain-id=evmos_9001-2 --offline --account-number $ACC_NUM --sequence $SEQ
+./evmosd tx sign unsignedTx.json --multisig=$STAKE_MULTISIG_ADDR --from=sign3 --output-document=sign3sig.json --chain-id=evmos_9001-2 --offline --account-number $ACC_NUM --sequence $SEQ
+clear
+./evmosd tx multisign unsignedTx.json stake_multisig sign1sig.json sign2sig.json sign3sig.json --chain-id=evmos_9001-2 --offline --account-number $ACC_NUM --sequence $SEQ
