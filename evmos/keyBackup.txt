@@ -1,0 +1,35 @@
+---RESTORE KEYS---
+./evmosd keys add bk1 --recover
+gAAAAABjWm_apmAJ_Yadapi7DwJdACrq4bU1ZSRJYRfBSLauQmgV6HUBSJCYMFKMjcEJmUwE0NoCy6mwu_VpGDC9ELj-AN_enNG-s0z5Gx4y2548d3204bx9tQ-ErOUim6PuGJ8YdGhzJvI42__toXYN6UO24J1jlPWjrkNEbiN3E5YSImv67-6SXLpa8hi8nrkq-nYWYwL9ZFkKROvkxuNj3agF9yg_R-VWUsiJbj5nqoAcw1nqF6JgP_UQ-FbbMDZw4cREjHrZuQD_U5Bvst8_FNoz_l2eEI6ENKOdb1xPdET0NLoYcj4=
+
+./evmosd keys add bk2 --recover
+gAAAAABjWnC1citJ4ogWesYLNFW6E7inpWwqbOg5MgyMFnIlE1HCWTClS_5f--4CWQMu4rQTgN3C4Bu-2mqqOcKHBL1caNausRCNNnGwoyQre2f-PZJI67QqvrTj1s0EyEuBCVCXczGrj5wWbOOEd2HppgDBrUM7Ulvn28JzOsUMcRfZcvSnJqcyCO-YQwFxH-azNGxzgW_hSIUDwX_uvLYwfeKnXpGfhEdMP0JCgnf1IiMnLFlhztOhnhkahuWpx64P7Y_oJJyMs5YP4Ft6iKxbna_7MgSyoA==
+
+./evmosd keys add bk3 --recover
+gAAAAABjWnFoTep7BYYz5QwIxhdkDXMfbSPoFNMg3YSyMX9P1YR9qoNOss0UfHm-XNd5ZBFEpX1WrxHGr_FlVNWd9IblO8zMprv4JwG8k2NkPV_O3JHkuZtYesj6nzo2wLja6EUPmMzsFfTVLxsdf5kQWNvUdPtWw_BcFGv_SkWg2Q206hIdJ0UVIGCePAv1XO6iid2OwXxTjJL20txBqx4tiWjnfJfMdJXCvm5Klflbo1_ICxyN2r1RUWtJrVLbASUh4MYLwEKRAo3L2E3KFGUT0X9Y_LZtEQ==
+
+./evmosd keys add bk_multisig --multisig=bk1,bk2,bk3 --multisig-threshold=3
+
+bk1: evmos1rmeypgx4m4l6rdpxnxk8kje6785f4na9tq0z3u
+bk2: evmos1x0y8p6u33mkmcckevz0nlr65zjetu5xluspza7
+bk3: evmos12rtu9uacjudkrcdngcr93uyn82cmvq83uykaap
+bk_multisig: evmos1pwufenww4q69vnskt37st8jzykfq9uz3qg0jup
+
+---SEND USDC---
+./evmosd tx ibc-transfer transfer transfer channel-0 osmo1776cj97235v8ru39jzkpguv36mcjqz230f7d6r 1000000ibc/7FBDBEEEBA9C50C4BCDF7BF438EAB99E64360833D240B32655C96E319559E911 --from evmos1pwufenww4q69vnskt37st8jzykfq9uz3qg0jup --gas=450000 --fees=11250000000000000aevmos --chain-id=evmos_9001-2 --node https://tendermint.bd.evmos.org:26657/ --generate-only > unsignedTx.json
+
+Remove timeout_timestamp
+
+rm -if unsignedTx.json
+signed_json=''
+echo $signed_json > unsignedTx.json
+
+---SIGN---
+export SEQ=0
+export ACC_NUM=2640212
+export BK_MULTISIG_ADDR=evmos1pwufenww4q69vnskt37st8jzykfq9uz3qg0jup
+./evmosd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk1 --output-document=bk1sig.json --chain-id=evmos_9001-2 --offline --account-number $ACC_NUM --sequence $SEQ
+./evmosd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk2 --output-document=bk2sig.json --chain-id=evmos_9001-2 --offline --account-number $ACC_NUM --sequence $SEQ
+./evmosd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk3 --output-document=bk3sig.json --chain-id=evmos_9001-2 --offline --account-number $ACC_NUM --sequence $SEQ
+clear
+./evmosd tx multisign unsignedTx.json bk_multisig bk1sig.json bk2sig.json bk3sig.json --chain-id=evmos_9001-2 --offline --account-number $ACC_NUM --sequence $SEQ
