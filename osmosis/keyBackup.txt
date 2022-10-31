@@ -1,0 +1,42 @@
+---RESTORE KEYS---
+
+./osmosisd keys add bk1 --recover
+gAAAAABjXg5vR-14IYwaCAK769suCwqvUevL49Vxq5JdkXtN9dUgVX-eWctfCXYCxTVrdT0GuierBvJMYab5GEduR43p5g1Rz3N3GMcyDEjqbZmt4JmyzmtW3iJLgv3wn0-vdsfFBhDzBdhLSIYHb6q57xXAaaHRw7s1Q63z1vMry9TBHOS6HGbSNVWUlsP-B_6kRtvU7_N6omuWIjUPne5cR-gZIW3wIeuJtCzyUPuUY3OmDjzNe2CI4Wr3d_-5NuicgDpann-W_NE5zdwAfVhxTDPY5rfkIw==
+
+./osmosisd keys add bk2 --recover
+gAAAAABjXg_7YhnKWh53uoBuEp-Bg9zfzjO7XiY7BK3TNPDEuwPiFO0fip-OM8kqe0HEy8Pv7Vupr_2Qpg86Y7rr6rlN-9VOJaDwCZuJ1UaOlw7qMs6X11OSGE8b3oQXbDlPqDzdGUpdC-XqbY7svy-DYW7WzaybC2DZxtIKU-d0bgKYkJ3x_5lBlv9EPqUQM_JQChqcep-poHJPmHmglcJ2qnzFnkcvcDlF2d9kA10kGp7SwnSYVR6U5P0AzDp8nsjLAZCtUtwNZseCB0nyqzHvNHeIulpKeQ==
+
+./osmosisd keys add bk3 --recover
+gAAAAABjXhCBIwPb5RUZtRvl4nOw-0b_OLPmhCoTf0R4AZS1Wu3HuVOgZY4zkuw4FRZKSbDWSsSZiG-oWJsVpI7NOo8fl34z_HeYckczDAwLrqZunxnmCsayvUkK5D1wosj-kpyowSj3_eW9ydJDZSulXC01EMHYzWZkBJ0P9ZVLYAUotWjH4u4-aajzma80DoGvahjhhi23AqXBlGdb8PNDybK0d5tMFK13nkUIRFwFc-q15OCYJY167gg20haaDax1bhA3P5b7AfLFb-chrV0kX1w44_Vv4Q==
+
+./osmosisd keys add bk_multisig --multisig=bk1,bk2,bk3 --multisig-threshold=3
+
+bk1: osmosis1rec4lvjdfqvs52wzuxn2xlr4cqvc7uhg6f7faj
+bk2: osmosis167q8n2rx3kvrr3m4vhnrnpztg7qylcsxzxfhza
+bk3: osmosis1hh7h4e3ztyxtqr5a4rwkp8yny6yyavjk4r8ev9
+bk_multisig: evmos1pwufenww4q69vnskt37st8jzykfq9uz3qg0jup
+
+---SEND USDC---
+./osmosisd tx bank send evmos1djsq4sderfsmnf00qzj8pdc3z2qew06k5qhv8x osmo1776cj97235v8ru39jzkpguv36mcjqz230f7d6r 100000ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858 --gas=350000 --fees=2863uosmo --chain-id=osmosis-1 --generate-only > unsignedTx.json
+
+Set timeout_timestamp 0
+
+rm -if unsignedTx.json
+signed_json=''
+echo $signed_json > unsignedTx.json
+
+---SIGN---
+export SEQ=0
+export ACC_NUM=
+export BK_MULTISIG_ADDR=evmos1pwufenww4q69vnskt37st8jzykfq9uz3qg0jup
+./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk1 --output-document=bk1sig.json --chain-id=reb_1111-1 --offline --account-number $ACC_NUM --sequence $SEQ
+./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk2 --output-document=bk2sig.json --chain-id=reb_1111-1 --offline --account-number $ACC_NUM --sequence $SEQ
+./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk3 --output-document=bk3sig.json --chain-id=reb_1111-1 --offline --account-number $ACC_NUM --sequence $SEQ
+clear
+./osmosisd tx multisign unsignedTx.json bk_multisig bk1sig.json bk2sig.json bk3sig.json --chain-id=reb_1111-1 --offline --account-number $ACC_NUM --sequence $SEQ
+
+---BROADCAST---
+rm -if signedTx.json
+signed_json=''
+echo $signed_json > signedTx.json
+./osmosisd tx broadcast signedTx.json --chain-id=reb_1111-1 --broadcast-mode=block --node https://rpc-1.osmosis.nodes.guru:443/
