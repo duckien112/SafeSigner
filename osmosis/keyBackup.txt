@@ -29,14 +29,14 @@ echo $signed_json > unsignedTx.json
 export SEQ=0
 export ACC_NUM=
 export BK_MULTISIG_ADDR=evmos1pwufenww4q69vnskt37st8jzykfq9uz3qg0jup
-./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk1 --output-document=bk1sig.json --chain-id=reb_1111-1 --offline --account-number $ACC_NUM --sequence $SEQ
-./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk2 --output-document=bk2sig.json --chain-id=reb_1111-1 --offline --account-number $ACC_NUM --sequence $SEQ
-./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk3 --output-document=bk3sig.json --chain-id=reb_1111-1 --offline --account-number $ACC_NUM --sequence $SEQ
+./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk1 --output-document=bk1sig.json --chain-id=osmosis-1 --offline --account-number $ACC_NUM --sequence $SEQ
+./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk2 --output-document=bk2sig.json --chain-id=osmosis-1 --offline --account-number $ACC_NUM --sequence $SEQ
+./osmosisd tx sign unsignedTx.json --multisig=$BK_MULTISIG_ADDR --from=bk3 --output-document=bk3sig.json --chain-id=osmosis-1 --offline --account-number $ACC_NUM --sequence $SEQ
 clear
-./osmosisd tx multisign unsignedTx.json bk_multisig bk1sig.json bk2sig.json bk3sig.json --chain-id=reb_1111-1 --offline --account-number $ACC_NUM --sequence $SEQ
+./osmosisd tx multisign unsignedTx.json bk_multisig bk1sig.json bk2sig.json bk3sig.json --chain-id=osmosis-1 --offline --account-number $ACC_NUM --sequence $SEQ
 
 ---BROADCAST---
 rm -if signedTx.json
 signed_json=''
 echo $signed_json > signedTx.json
-./osmosisd tx broadcast signedTx.json --chain-id=reb_1111-1 --broadcast-mode=block --node https://rpc-1.osmosis.nodes.guru:443/
+./osmosisd tx broadcast signedTx.json --chain-id=osmosis-1 --broadcast-mode=block --node https://osmosis-mainnet-rpc.allthatnode.com:26657/
