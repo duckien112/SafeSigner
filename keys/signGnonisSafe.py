@@ -1,11 +1,12 @@
 from eth_account import Account
 from hexbytes import HexBytes
 from lib import *
+import getpass
 
 contractTransactionHash = input("Enter contract_transaction_hash: ")
-number = input("Enter number with 9 chars in Visa: ")
-password = input("Enter word with 9 chars in Visa: ")
-seeds = input("Enter seeds: ")
+number = getpass.getpass("Enter number with 9 chars in Visa: ")
+password = getpass.getpass("Enter word with 9 chars in Visa: ")
+seeds = getpass.getpass("Enter seeds: ")
 mnemonic = encryptSeeds('0', number, password, seeds)
 
 contract_transaction_hash = HexBytes(contractTransactionHash)
